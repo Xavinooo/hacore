@@ -34,6 +34,7 @@ DEFAULT_DEVICE_NAME = "Unknown device"
 STORAGE_KEY = DOMAIN
 STORAGE_VERSION = 1
 
+CONF_SERVICE = "custom_service_name"
 
 CONNECTION_SENSORS_KEYS = {"rate_down", "rate_up"}
 

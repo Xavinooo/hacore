@@ -29,6 +29,7 @@ from homeassistant.util import slugify
 from .const import (
     API_VERSION,
     APP_DESC,
+    CONF_SERVICE,
     CONNECTION_SENSORS_KEYS,
     DOMAIN,
     HOME_COMPATIBLE_CATEGORIES,
@@ -53,7 +54,14 @@ def is_json(json_str: str) -> bool:
     return True
 
 
-async def get_api(hass: HomeAssistant, host: str) -> Freepybox:
+def read_device_name_from_file(token_file: Path) -> str:
+    """Read the device_name of the file."""
+    with open(token_file, encoding="us-ascii") as f:
+        data = json.load(f)
+        return data["device_name"]
+
+
+async def get_api(hass: HomeAssistant, host: str, serviceName: str) -> Freepybox:
     """Get the Freebox API."""
     freebox_path = Store(hass, STORAGE_VERSION, STORAGE_KEY).path
 
@@ -61,6 +69,13 @@ async def get_api(hass: HomeAssistant, host: str) -> Freepybox:
         await hass.async_add_executor_job(os.makedirs, freebox_path)
 
     token_file = Path(f"{freebox_path}/{slugify(host)}.conf")
+
+    if os.path.exists(token_file):
+        APP_DESC["device_name"] = await hass.async_add_executor_job(
+            read_device_name_from_file, token_file
+        )
+    elif serviceName:
+        APP_DESC["device_name"] = serviceName
 
     return Freepybox(APP_DESC, token_file, API_VERSION)
 
@@ -110,6 +125,7 @@ class FreeboxRouter:
         self.hass = hass
         self._host = entry.data[CONF_HOST]
         self._port = entry.data[CONF_PORT]
+        self._serviceName = entry.data[CONF_SERVICE]
 
         self._api: Freepybox = api
         self.name: str = freebox_config["model_info"]["pretty_name"]

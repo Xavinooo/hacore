@@ -11,7 +11,7 @@ from homeassistant.core import Event, HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, PLATFORMS, SERVICE_REBOOT
+from .const import CONF_SERVICE, DOMAIN, PLATFORMS, SERVICE_REBOOT
 from .router import FreeboxRouter, get_api
 
 SCAN_INTERVAL = timedelta(seconds=30)
@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Freebox entry."""
-    api = await get_api(hass, entry.data[CONF_HOST])
+    api = await get_api(hass, entry.data[CONF_HOST], entry.data[CONF_SERVICE])
     try:
         await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT])
     except HttpRequestError as err:
