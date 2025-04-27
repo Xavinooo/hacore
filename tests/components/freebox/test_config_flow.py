@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers.service_info.zeroconf import ZeroconfServiceInfo
 
-from .const import MOCK_HOST, MOCK_PORT
+from .const import CONF_SERVICE, MOCK_CONF_SERVICE, MOCK_HOST, MOCK_PORT
 
 from tests.common import MockConfigEntry
 
@@ -53,7 +53,11 @@ async def test_user(hass: HomeAssistant) -> None:
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": SOURCE_USER},
-        data={CONF_HOST: MOCK_HOST, CONF_PORT: MOCK_PORT},
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_SERVICE: MOCK_CONF_SERVICE,
+        },
     )
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "link"
@@ -79,7 +83,11 @@ async def internal_test_link(hass: HomeAssistant) -> None:
         result = await hass.config_entries.flow.async_init(
             DOMAIN,
             context={"source": SOURCE_USER},
-            data={CONF_HOST: MOCK_HOST, CONF_PORT: MOCK_PORT},
+            data={
+                CONF_HOST: MOCK_HOST,
+                CONF_PORT: MOCK_PORT,
+                CONF_SERVICE: MOCK_CONF_SERVICE,
+            },
         )
 
         result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
@@ -109,7 +117,11 @@ async def test_link_bridge_mode_error(
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": SOURCE_USER},
-        data={CONF_HOST: MOCK_HOST, CONF_PORT: MOCK_PORT},
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_SERVICE: MOCK_CONF_SERVICE,
+        },
     )
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
     assert result["type"] is FlowResultType.FORM
@@ -120,7 +132,11 @@ async def test_abort_if_already_setup(hass: HomeAssistant) -> None:
     """Test we abort if component is already setup."""
     MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_HOST: MOCK_HOST, CONF_PORT: MOCK_PORT},
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_SERVICE: MOCK_CONF_SERVICE,
+        },
         unique_id=MOCK_HOST,
     ).add_to_hass(hass)
 
@@ -128,7 +144,11 @@ async def test_abort_if_already_setup(hass: HomeAssistant) -> None:
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": SOURCE_USER},
-        data={CONF_HOST: MOCK_HOST, CONF_PORT: MOCK_PORT},
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_SERVICE: MOCK_CONF_SERVICE,
+        },
     )
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "already_configured"
@@ -139,7 +159,11 @@ async def test_on_link_failed(hass: HomeAssistant) -> None:
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": SOURCE_USER},
-        data={CONF_HOST: MOCK_HOST, CONF_PORT: MOCK_PORT},
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_SERVICE: MOCK_CONF_SERVICE,
+        },
     )
 
     with patch(

@@ -7,7 +7,7 @@ from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.setup import async_setup_component
 
-from .const import MOCK_HOST, MOCK_PORT
+from .const import CONF_SERVICE, MOCK_CONF_SERVICE, MOCK_HOST, MOCK_PORT
 
 from tests.common import MockConfigEntry
 
@@ -16,7 +16,11 @@ async def setup_platform(hass: HomeAssistant, platform: str) -> MockConfigEntry:
     """Set up the Freebox platform."""
     mock_entry = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_HOST: MOCK_HOST, CONF_PORT: MOCK_PORT},
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_SERVICE: MOCK_CONF_SERVICE,
+        },
         unique_id=MOCK_HOST,
     )
     mock_entry.add_to_hass(hass)
