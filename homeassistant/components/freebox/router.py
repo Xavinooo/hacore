@@ -29,7 +29,6 @@ from homeassistant.util import slugify
 from .const import (
     API_VERSION,
     APP_DESC,
-    CONF_SERVICE,
     CONNECTION_SENSORS_KEYS,
     DOMAIN,
     HOME_COMPATIBLE_CATEGORIES,
@@ -61,7 +60,9 @@ def read_device_name_from_file(token_file: Path) -> str:
         return data["device_name"]
 
 
-async def get_api(hass: HomeAssistant, host: str, serviceName: str) -> Freepybox:
+async def get_api(
+    hass: HomeAssistant, host: str, serviceName: str | None = None
+) -> Freepybox:
     """Get the Freebox API."""
     freebox_path = Store(hass, STORAGE_VERSION, STORAGE_KEY).path
 
@@ -74,7 +75,7 @@ async def get_api(hass: HomeAssistant, host: str, serviceName: str) -> Freepybox
         APP_DESC["device_name"] = await hass.async_add_executor_job(
             read_device_name_from_file, token_file
         )
-    elif serviceName:
+    elif serviceName is not None:
         APP_DESC["device_name"] = serviceName
 
     return Freepybox(APP_DESC, token_file, API_VERSION)
@@ -125,7 +126,7 @@ class FreeboxRouter:
         self.hass = hass
         self._host = entry.data[CONF_HOST]
         self._port = entry.data[CONF_PORT]
-        self._serviceName = entry.data[CONF_SERVICE]
+        self._serviceName = APP_DESC["device_name"]
 
         self._api: Freepybox = api
         self.name: str = freebox_config["model_info"]["pretty_name"]
